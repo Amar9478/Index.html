@@ -1,8 +1,8 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QC Register - Jyoti Gas</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -27,13 +27,28 @@
     .var-ok { color: #15803d; font-weight: bold; }
     .var-bad { color: #b91c1c; font-weight: bold; }
 
+    /* EXACT SINGLE-PAGE A4 PRINT STYLES */
+    @page {
+      size: A4 portrait;
+      margin: 6mm 5mm;
+    }
     @media print {
-      body { @page  size: A4 portrait; margin: 8mm 6mm;  }
+      body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
       .card, .btn, label, select, input, h2, h3, .msg-box { display: none !important; }
-      #printArea { display: block !important; }
-      table { width: 100%; border-collapse: collapse; font-size: 10pt; }
-      th, td { border: 1px solid #000 !important; padding: 4px; }
-      th { background-color: #eee !important; }
+      #printArea { display: block !important; width: 100% !important; }
+
+      .print-header { text-align: center; margin-bottom: 4px; }
+      .print-header h1 { font-size: 14pt; margin: 0; font-weight: bold; color: #000; }
+      .print-header h2 { font-size: 11pt; margin: 2px 0 0 0; font-weight: bold; color: #333; }
+
+      .print-meta-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; border: none !important; }
+      .print-meta-table td { border: none !important; padding: 1.5px 4px; font-size: 8.5pt; }
+
+      .print-data-table { width: 100%; border-collapse: collapse; font-size: 7.5pt; table-layout: fixed; }
+      .print-data-table th, .print-data-table td { border: 1px solid #000 !important; padding: 2px 1px !important; text-align: center; height: 16px; line-height: 1.1; }
+      .print-data-table th { background-color: #f0f0f0 !important; font-weight: bold; -webkit-print-color-adjust: exact; }
+
+      .print-signatures { display: flex !important; justify-content: space-between; margin-top: 20px; padding: 0 25px; font-weight: bold; font-size: 8.5pt; }
     }
     #printArea { display: none; }
   </style>
@@ -273,22 +288,41 @@
       var d1 = document.getElementById('dateStr').value || "-";
       var d2 = document.getElementById('dateReceived').value || "-";
 
-      var html = "<div style='text-align:center;'><h2>QC CHECK AT GODOWN</h2><h3>" + catText + "</h3></div>" +
-        "<table style='margin-bottom:8px; border:none;'>" +
-        "<tr><td style='border:none; text-align:left;'><b>INVOICE NO:</b> " + inv + "</td><td style='border:none; text-align:right;'><b>JYOTI GAS SERVICE, BORSAD.</b></td></tr>" +
-        "<tr><td style='border:none; text-align:left;'><b>DATE:</b> " + d1 + "</td><td style='border:none; text-align:right;'><b>LORRY NO:</b> " + lorry + "</td></tr>" +
-        "<tr><td style='border:none;'></td><td style='border:none; text-align:right;'><b>DATE OF RECEIVED:</b> " + d2 + "</td></tr>" +
+      var html = "" +
+        "<div class='print-header'>" +
+          "<h1>JYOTI GAS SERVICE, BORSAD.</h1>" +
+          "<h2>QC CHECK AT GODOWN - " + catText + "</h2>" +
+        "</div>" +
+        "<table class='print-meta-table'>" +
+          "<tr>" +
+            "<td style='text-align:left; width:50%;'><b>INVOICE NO:</b> " + inv + "</td>" +
+            "<td style='text-align:right; width:50%;'><b>LORRY NO:</b> " + lorry + "</td>" +
+          "</tr>" +
+          "<tr>" +
+            "<td style='text-align:left;'><b>DATE:</b> " + d1 + "</td>" +
+            "<td style='text-align:right;'><b>DATE OF RECEIVED:</b> " + d2 + "</td>" +
+          "</tr>" +
         "</table>" +
-        "<table><thead><tr>" +
-        "<th>SR.NO</th><th>SR.NO OF CYLINDER</th><th>TARE WT. (KG)</th><th>GROSS WT. (KG)</th><th>NET WT. (KG)</th><th>VARIATION (GMS)</th><th>REMARKS</th>" +
-        "</tr></thead><tbody>";
+        "<table class='print-data-table'>" +
+          "<thead>" +
+            "<tr>" +
+              "<th style='width:30px;'>SR.NO</th>" +
+              "<th>SR.NO OF CYLINDER</th>" +
+              "<th style='width:60px;'>TARE WT.<br>(KG)</th>" +
+              "<th style='width:60px;'>GROSS WT.<br>(KG)</th>" +
+              "<th style='width:50px;'>NET WT.<br>(KG)</th>" +
+              "<th style='width:65px;'>VARIATION<br>(GMS)</th>" +
+              "<th style='width:70px;'>REMARKS</th>" +
+            "</tr>" +
+          "</thead>" +
+          "<tbody>";
 
       for (var i = 0; i < 36; i++) {
         if (i < entries.length) {
           var e = entries[i];
           html += "<tr>" +
             "<td>" + e.sr + "</td>" +
-            "<td>" + e.cyl + "</td>" +
+            "<td><b>" + e.cyl + "</b></td>" +
             "<td>" + e.tare + "</td>" +
             "<td>" + e.gross + "</td>" +
             "<td>" + e.net + "</td>" +
@@ -301,8 +335,10 @@
       }
 
       html += "</tbody></table>" +
-        "<div style='display:flex; justify-content:space-between; margin-top:35px; font-weight:bold; font-size:12px;'>" +
-        "<div>SIGN. OF GODOWN KEEPER</div><div>SIGN. OF DISTRIBUTOR</div></div>";
+        "<div class='print-signatures'>" +
+          "<div>SIGN. OF GODOWN KEEPER</div>" +
+          "<div>SIGN. OF DISTRIBUTOR</div>" +
+        "</div>";
 
       document.getElementById('printArea').innerHTML = html;
       window.print();
